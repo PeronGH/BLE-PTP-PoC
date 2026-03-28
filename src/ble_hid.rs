@@ -297,9 +297,16 @@ unsafe extern "C" fn hidd_event_handler(
             }
         }
         esp_hid_ffi::ESP_HIDD_CONNECT_EVENT => {
-            info!("HIDD: connected");
-            CONNECTED.store(true, Ordering::Release);
+            info!("HIDD: connected — waiting for host enumeration");
             preload_feature_reports();
+            // Don't set CONNECTED yet; wait for feature reports to be read
+            // so the host has time to enable GATT notifications.
+        }
+        esp_hid_ffi::ESP_HIDD_FEATURE_EVENT => {
+            info!("HIDD: feature report received");
+            // Once Windows reads feature reports, it has subscribed to
+            // notifications and is ready to receive input reports.
+            CONNECTED.store(true, Ordering::Release);
         }
         esp_hid_ffi::ESP_HIDD_DISCONNECT_EVENT => {
             info!("HIDD: disconnected — restarting advertising");
@@ -307,9 +314,6 @@ unsafe extern "C" fn hidd_event_handler(
             if let Err(e) = start_advertising() {
                 error!("Failed to restart advertising: {e}");
             }
-        }
-        esp_hid_ffi::ESP_HIDD_FEATURE_EVENT => {
-            info!("HIDD: feature report received");
         }
         esp_hid_ffi::ESP_HIDD_OUTPUT_EVENT => {
             info!("HIDD: output report received");
