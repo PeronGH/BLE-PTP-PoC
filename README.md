@@ -11,7 +11,7 @@ I ble_ptp_poc::ble_hid: HIDD: feature SET report_id=0x04 data=[03]
 I ble_ptp_poc::ble_hid: *** Windows set Input Mode = 3 (PTP) — precision touchpad confirmed ***
 ```
 
-This proves PTP over BLE HOGP is viable and unblocks the [esp32-universal-control](https://github.com/PeronGH/BLE-PTP-PoC) project.
+This proves PTP over BLE HOGP is viable. This PoC was built to de-risk the [esp32-universal-control](https://github.com/PeronGH/esp32-universal-control) project, which will be developed separately.
 
 ## What it does
 
